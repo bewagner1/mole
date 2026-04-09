@@ -60,8 +60,47 @@ vec plasma_grid(u16 k, vec left, vec right, vec bottom, vec top);
 vec vacuum_grid(u16 k, u32 n, vec bottom, vec top);
 
 /**
+ * @brief Reads coil data from file
  * 
+ * @param coil_path Path to coil file
  */
 mat read_coils(const char* coil_path);
+
+/**
+ * @brief 4th Order Lagrangian interpolation
+ * 
+ * @param m Number of cells in x-direction
+ * @param n Number of cells in y-direction
+ */
+sp_mat interpolNodesToCentersCurv(u32 m, u32 n);
+
+/**
+ * @brief Returns a vector of the points along the boundary of a nonperiodic domain
+ * 
+ * @param domain Domain to get boundary points of
+ */
+vec get_boundary(vec domain, u32 m, u32 n);
+
+/**
+ * @brief Returns a vector of the points along the boundary of a nonperiodic domain
+ * 
+ * @param domain Domain to get boundary points of
+ */
+vec get_boundary(mat domain);
+
+/**
+ * @brief Returns a vector of points along the last closed flux surface
+ * 
+ * @param plasma_r R-coordinates of plasma domain
+ * @param plasma_z Z-coordinates of plasma domain
+ * @param plasma_p Psi in plasma domain
+ * @param vacuum_r R-coordinates of vacuum domain
+ * @param vacuum_z Z-coordinates of plasma domain
+ * @param vacuum_p Psi in vacuum domain
+ * @param num_plasma_bdry Number of points to sample along the last closed flux surface
+ */
+vec get_separatrix(vec plasma_r, vec plasma_z, vec plasma_p,
+                   vec vacuum_r, vec vacuum_z, vec vacuum_p,
+                   const u32 num_plasma_bdry);
 
 #endif //TOKAMAK_H

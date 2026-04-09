@@ -8,16 +8,6 @@
 /**
  * 
  */
-sp_mat interpolNodesToCentersCurv(u32 m, u32 n);
-
-/**
- * 
- */
-vec get_boundary(vec domain);
-
-/**
- * 
- */
 vec solve();
 
 int main(int argc, char* argv[])
@@ -27,15 +17,16 @@ int main(int argc, char* argv[])
     }
 
     // Parameters and things
-    constexpr u16 k = 8;
-    constexpr u32 mp = 70; // For plasma domain
-    constexpr u32 np = 30; // For plasma domain
-    constexpr u32 nv = 25; // For vacuum domain (mv is 2 * (mp + np) + 4)
+    constexpr u16 k = 8;                           // Order of accuracy
+    constexpr u32 num_plasma_bdry = 200;           // Should this be an argument?
+    constexpr u32 mp = 35 * num_plasma_bdry / 100; // For plasma domain
+    constexpr u32 np = 15 * num_plasma_bdry / 100; // For plasma domain
+    constexpr u32 nv = 25;                         // For vacuum domain (mv is 2 * (mp + np) + 4)
 
-    ivec pdc = {1, 1, 1, 1};
-    ivec pnc = {0, 0, 0, 0};
-    ivec vdc = {0, 0, 1, 1};
-    ivec vnc = {0, 0, 0, 0};
+    ivec pdc = {1, 1, 1, 1}; // Plasma Dirichlet coefficients
+    ivec pnc = {0, 0, 0, 0}; // Plasma Neumann coefficients
+    ivec vdc = {0, 0, 1, 1}; // Vacuum Dirichlet coefficients
+    ivec vnc = {0, 0, 0, 0}; // Vacuum Neumann coefficients
 
     /**********************
         Read Input Data
@@ -85,31 +76,22 @@ int main(int argc, char* argv[])
     vec vacuum_r = vacuum_grid(k, nv, plasma_r_bdry, tok_r_bdry);
     vec vacuum_z = vacuum_grid(k, nv, plasma_z_bdry, tok_z_bdry);
 
+    /* initial guess of psi, probably a Gaussian */
+
     // Picard Iterations
 
     // Coil Contributions
 
     // Find separatrix
 
+    // Write to solution to a file (for plotting elsewhere)
 
     // Time dependency ?
 
     return 0;
 }
 
-// Function implementations
-
-sp_mat interpolNodesToCentersCurv(u32 m, u32 n)
-{
-
-}
-
-vec get_boundary(vec domain)
-{
-
-}
-
 vec solve()
 {
-    
+
 }

@@ -138,3 +138,27 @@ mat read_coils(const char* coil_path)
 {
 
 }
+
+// 
+sp_mat interpolNodesToCentersCurv(u32 m, u32 n)
+{
+
+}
+
+// 
+vec get_boundary(vec domain, u32 m, u32 n)
+{
+    return get_boundary((mat)reshape(domain, n, m));
+}
+
+// 
+vec get_boundary(mat domain)
+{
+
+}
+
+// 
+vec get_separatrix(vec plasma_r, vec plasma_z, vec plasma_p, vec vacuum_r, vec vacuum_z, vec vacuum_p, const u32 num_plasma_bdry)
+{
+    
+}
