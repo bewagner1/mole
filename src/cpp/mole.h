@@ -25,5 +25,7 @@
 #include "operators.h"
 #include "robinbc.h"
 #include "utils.h"
+#include "divcurv.h"
+#include "gradcurv.h"
 
 #endif // MOLE_H

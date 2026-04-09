@@ -7,6 +7,7 @@
 
 #include "gradient.h"
 #include "interpolFtoC.h"
+#include "operators.h"
 
 /**
  * 

@@ -134,7 +134,7 @@ vec vacuum_grid(u16 k, u32 n, vec bottom, vec top)
 }
 
 // Reads coil information
-void read_coils()
+mat read_coils(const char* coil_path)
 {
 
 }
