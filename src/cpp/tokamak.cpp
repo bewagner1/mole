@@ -36,7 +36,7 @@ sp_mat weighted_laplacian(u16 k, u32 m, Real dx, u32 n, Real dy, Real alpha, Rea
 }
 
 // Generates x- or y- coordinates of plasma grid
-vec plasma_grid(u16 k, vec left, vec right, vec bottom, vec top)
+vec plasma_grid(u16 k, const vec& left, const vec& right, const vec& bottom, const vec& top)
 {
     u32 m = bottom.n_elem - 1;
     u32 n = top.n_elem - 1;
@@ -77,7 +77,7 @@ vec plasma_grid(u16 k, vec left, vec right, vec bottom, vec top)
 }
 
 // Generates x- or y- coordinates of vacuum grid
-vec vacuum_grid(u16 k, u32 n, vec bottom, vec top)
+vec vacuum_grid(u16 k, u32 n, const vec& bottom, const vec& top)
 {
     Real alpha = 0.0;
     Real beta = 0.0;
@@ -139,26 +139,93 @@ mat read_coils(const char* coil_path)
 
 }
 
+// Reads boundary information
+vec read_boundary(const char* bdry_path)
+{
+
+}
+
+// Segments boundary into 4 pieces, left, right, bottom, and top
+void segment_boundary(const vec& r_bdry, const vec& z_bdry, vec& left_r, vec& right_r, vec& bottom_r, vec& top_r, vec& left_z, vec& right_z, vec& bottom_z, vec& top_z, const u32 m, const u32 n)
+{
+    uword idx = index_min(r_bdry + z_bdry);
+
+    vec r_bdry_shifted = circshift(r_bdry, idx);
+    vec z_bdry_shifted = circshift(z_bdry, idx);
+
+    left_r = r_bdry_shifted(span(0, n));
+    left_z = z_bdry_shifted(span(0, n));
+
+    top_r = r_bdry_shifted(span(n, n + m + 1));
+    top_z = z_bdry_shifted(span(n, n + m + 1));
+
+    right_r = r_bdry_shifted(span(n + m + 1, n + m + n + 2));
+    right_z = z_bdry_shifted(span(n + m + 1, n + m + n + 2));
+
+    bottom_r = r_bdry_shifted(span(n + m + n + 2, n + m + n + m + 3));
+    bottom_z = z_bdry_shifted(span(n + m + n + 2, n + m + n + m + 3));
+
+    right_r = flipud(right_r); // Order needs to be bottom to top
+    right_z = flipud(right_z);
+
+    bottom_r = flipud(bottom_r); // Order needs to be left to right
+    bottom_z = flipud(bottom_z);
+}
+
 // 
 sp_mat interpolNodesToCentersCurv(u32 m, u32 n)
 {
+    sp_mat Ix(m + 2, m + 1);
+    sp_mat Iy(n + 2, n + 1);
 
+    Ix(0, 0) = 1.0;
+    Ix(1, 0) = 5.0 / 16.0;
+    Ix(1, 1) = 15.0 / 16.0;
+    Ix(1, 2) = -5.0 / 16.0;
+    Ix(1, 3) = 1.0 / 16.0;
+    for (int i = 2; i < m; ++i) {
+        Ix(i, i - 2) = -1.0 / 16.0;
+        Ix(i, i - 1) = 9.0 / 16.0;
+        Ix(i, i) = 9.0 / 16.0;
+        Ix(i, i + 1) = -1.0 / 16.0;
+    }
+    Ix(m, m - 3) = 1.0 / 16.0;
+    Ix(m, m - 2) = -5.0 / 16.0;
+    Ix(m, m - 1) = 15.0 / 16.0;
+    Ix(m, m) = 5.0 / 16.0;
+    Ix(m + 1, m) = 1.0;
+
+    Iy(0, 0) = 1.0;
+    Iy(1, 0) = 5.0 / 16.0;
+    Iy(1, 1) = 15.0 / 16.0;
+    Iy(1, 2) = -5.0 / 16.0;
+    Iy(1, 3) = 1.0 / 16.0;
+    for (int i = 2; i < n; ++i) {
+        Iy(i, i - 2) = -1.0 / 16.0;
+        Iy(i, i - 1) = 9.0 / 16.0;
+        Iy(i, i) = 9.0 / 16.0;
+        Iy(i, i + 1) = -1.0 / 16.0;
+    }
+    Iy(n, n - 3) = 1.0 / 16.0;
+    Iy(n, n - 2) = -5.0 / 16.0;
+    Iy(n, n - 1) = 15.0 / 16.0;
+    Iy(n, n) = 5.0 / 16.0;
+    Iy(n + 1, n) = 1.0;
+
+    return Utils::spkron(Iy, Ix);
 }
 
 // 
-vec get_boundary(vec domain, u32 m, u32 n)
+mat get_last_closed_flux_surface(const vec& R, const vec& Z, const vec& psi)
 {
-    return get_boundary((mat)reshape(domain, n, m));
+    /* TODO: Find last closed flux surface */
+    const u32 num_plasma_bdry = 200;
 }
 
 // 
-vec get_boundary(mat domain)
+uvec get_plasma_indices(const vec& R, const vec& Z, const vec& psi)
 {
+    mat plasma_bdry = get_last_closed_flux_surface(R, Z, psi);
 
-}
-
-// 
-vec get_separatrix(vec plasma_r, vec plasma_z, vec plasma_p, vec vacuum_r, vec vacuum_z, vec vacuum_p, const u32 num_plasma_bdry)
-{
-    
+    /* TODO: Find indices of R and Z that fall within plasma_bdry */
 }
