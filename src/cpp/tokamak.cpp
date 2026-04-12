@@ -226,6 +226,28 @@ mat get_last_closed_flux_surface(const vec& R, const vec& Z, const vec& psi)
 uvec get_plasma_indices(const vec& R, const vec& Z, const vec& psi)
 {
     mat plasma_bdry = get_last_closed_flux_surface(R, Z, psi);
+    vec plasma_r = plasma_bdry.col(0);
+    vec plasma_z = plasma_bdry.col(1);
 
-    /* TODO: Find indices of R and Z that fall within plasma_bdry */
+    int n = plasma_bdry.n_rows;
+    int j = n - 1;
+
+    Col<bool> inside = Col<bool>(R.n_elem, fill::zeros);
+    bool intersect;
+    Real ri, zi, rj, zj;
+    for (int i = 0; i < n; ++i) {
+        ri = plasma_r(i);
+        zi = plasma_z(i);
+        rj = plasma_r(j);
+        zj = plasma_z(j);
+
+        for (int k = 0; k < R.n_elem; ++k) {
+            intersect = ((zi > Z(k)) != (zj > Z(k))) && (R(k) < (rj - ri) * (Z(k) - zi) / (zj - zi) + ri);
+            inside[k] = inside[k] ^ intersect;
+        }
+        
+        j = i;
+    }
+
+    return find(inside);
 }
