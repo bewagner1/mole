@@ -56,7 +56,7 @@ using Polyline = std::vector<Point2D>;
 /**
  * 
  */
-Point2D interp(const Point2D& a, const Point2D& b, Real va, Real vb, Real level);
+Point2D interp(Point2D a, Point2D b, Real va, Real vb, Real level);
 
 /**
  * 

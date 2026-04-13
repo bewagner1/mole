@@ -7,7 +7,7 @@
 #include "tokamak.h"
 
 // 
-Point2D interp(const Point2D& a, const Point2D& b, Real va, Real vb, Real level)
+Point2D interp(Point2D a, Point2D b, Real va, Real vb, Real level)
 {
     Real t = (level - va) / (vb - va);
     return {a.x + t * (b.x - a.x), a.y + t * (b.y - a.y)};
@@ -20,6 +20,8 @@ std::vector<Segment> marchingSquares(const mat& psi, const mat& R, const mat& Z,
     uword nr = psi.n_rows;
     uword nc = psi.n_cols;
     int edges[4][2] = {{0, 1}, {1, 2}, {2, 3}, {3, 0}};
+    int a, b, idx;
+    bool aAbove, bAbove;
 
     for (uword i = 0; i < nr; ++i) {
         for (uword j = 0; j < nc; ++j) {
@@ -35,7 +37,7 @@ std::vector<Segment> marchingSquares(const mat& psi, const mat& R, const mat& Z,
                              { R(i + 1, j), Z(i + 1, j) }
                            };
 
-            int idx = 0;
+            idx = 0;
             for (int k = 0; k < 4; ++k) {
                 if (v[k] >= level) idx |= (1 << k);
             }
@@ -43,10 +45,10 @@ std::vector<Segment> marchingSquares(const mat& psi, const mat& R, const mat& Z,
 
             std::vector<Point2D> crossings;
             for (auto& e : edges) {
-                int a = e[0];
-                int b = e[1];
-                bool aAbove = (v[a] >= level);
-                bool bAbove = (v[b] >= level);
+                a = e[0];
+                b = e[1];
+                aAbove = (v[a] >= level);
+                bAbove = (v[b] >= level);
                 if (aAbove != bAbove) crossings.push_back(interp(p[a], p[b], v[a], v[b], level));
             }
 
@@ -69,12 +71,13 @@ std::vector<Polyline> chainSegments(const std::vector<Segment>& segs, Real tol =
 {
     std::vector<bool> used(segs.size(), false);
     std::vector<Polyline> chains;
+    bool grew;
 
     for (size_t i = 0; i < segs.size(); ++i) {
         if (used[i]) continue;
         Polyline chain = {segs[i].first, segs[i].second};
         used[i] = true;
-        bool grew = true;
+        grew = true;
         while (grew) {
             grew = false;
             for (size_t j = 0; j < segs.size(); ++j) {
@@ -112,9 +115,10 @@ Real lastClosedContour(const mat& psi, const mat& R, const mat& Z, int iteration
 {
     Real lo = psi.min() + 1e-9;
     Real hi = psi.max() - 1e-9;
+    Real mid;
 
     for (int iter = 0; iter < iterations; ++iter) {
-        Real mid = 0.5 * (lo + hi);
+        mid = 0.5 * (lo + hi);
         auto segs = marchingSquares(psi, R, Z, mid);
         auto chains = chainSegments(segs);
         if (allClosed(chains)) {
@@ -141,14 +145,16 @@ Polyline sampleClosedContour(const Polyline& chain, int n)
     Polyline result;
     result.reserve(n);
 
+    Real target, segLen, t;
+
     for (int k = 0; k < n; ++k) {
-        Real target = totalLen * k / n;
+        target = totalLen * k / n;
 
         auto it = std::lower_bound(arcLen.begin(), arcLen.end(), target);
         int idx = std::max(0, (int)std::distance(arcLen.begin(), it) - 1);
 
-        Real segLen = arcLen[idx + 1] - arcLen[idx];
-        Real t = (segLen > 1e-12) ? (target - arcLen[idx]) / segLen : 0.0;
+        segLen = arcLen[idx + 1] - arcLen[idx];
+        t = (segLen > 1e-12) ? (target - arcLen[idx]) / segLen : 0.0;
 
         result.push_back({chain[idx].x + t * (chain[idx + 1].x - chain[idx].x),
                           chain[idx].y + t * (chain[idx + 1].y - chain[idx].y)});
