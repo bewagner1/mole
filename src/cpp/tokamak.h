@@ -38,6 +38,57 @@
 #define MU0 arma::datum::mu_0
 
 /**
+ * @brief Default number of points to sample along the plasma boundary
+ */
+#define NUM_PLASMA_BDRY 200
+
+/**
+ * 
+ */
+struct Point2D {
+    Real x, y;
+};
+
+using Segment = std::pair<Point2D, Point2D>;
+
+using Polyline = std::vector<Point2D>;
+
+/**
+ * 
+ */
+Point2D interp(const Point2D& a, const Point2D& b, Real va, Real vb, Real level);
+
+/**
+ * 
+ */
+std::vector<Segment> marchingSquares(const mat& psi, const mat& R, const mat& Z, Real level);
+
+/**
+ * 
+ */
+Real ptDist(Point2D a, Point2D b);
+
+/**
+ * 
+ */
+std::vector<Polyline> chainSegments(const std::vector<Segment>& segs, Real tol = 1e-9);
+
+/**
+ * 
+ */
+bool allClosed(const std::vector<Polyline>& chains, Real tol = 1e-6);
+
+/**
+ * 
+ */
+Real lastClosedContour(const mat& psi, const mat& R, const mat& Z, int iterations = 50);
+
+/**
+ * 
+ */
+Polyline sampleClosedContour(const Polyline& chain, int n);
+
+/**
  * @brief Constructs the laplacian matrix for u_xx / (alpha^2) + u_yy / (beta^2)
  * 
  * @param k Order of accuracy

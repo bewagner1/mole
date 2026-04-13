@@ -94,6 +94,8 @@ int main(int argc, char* argv[])
 
     }
 
+    /* Interpolate boundary ? */
+
     vec left_r(n + 1), right_r(n + 1), bottom_r(m + 1), top_r(m + 1);
     vec left_z(n + 1), right_z(n + 1), bottom_z(m + 1), top_z(m + 1);
 
@@ -109,16 +111,20 @@ int main(int argc, char* argv[])
     vec psi = solve(R, Z, k, m, n);
     coil_contribution(R, Z, psi, coils);
 
+    /* Time dependency ? */
+
     // Write to solution to a file (for plotting elsewhere)
     if (/* something to do with argc */) {
 
     } else {
-        R.save("r.csv", arma::csv_ascii);
-        Z.save("z.csv", arma::csv_ascii);
-        psi.save("psi.csv", arma::csv_ascii);
+        mat rzp = join_rows(R, Z, psi);
+        char buff[256];
+        int _ = sprintf(buff, "rzp%um%un.csv", m, n);
+        rzp.save(buff, arma::csv_ascii);
+        // R.save("r.csv", arma::csv_ascii);
+        // Z.save("z.csv", arma::csv_ascii);
+        // psi.save("psi.csv", arma::csv_ascii);
     }
-
-    // Time dependency ?
 
     return 0;
 }
@@ -130,7 +136,7 @@ vec initial_guess(const vec& R, const vec& Z)
     Real zmag = 0.0;
     Real rsig = 1.0;
     Real zsig = 1.0;
-    vec psi = exp(-((R - rmag) % (R - rmag) / (2.0 * rsig * rsig) + (Z - zmag) % (Z - zmag) / (2 * zsig * zsig)));
+    vec psi = exp(-((R - rmag) % (R - rmag) / (2.0 * rsig * rsig) + (Z - zmag) % (Z - zmag) / (2.0 * zsig * zsig)));
 
     return psi;
 }
@@ -166,7 +172,8 @@ vec solve(const vec& R, const vec& Z, const u16 k, const u32 m, const u32 n)
 
     Real e = 1.0;
     Real tol = 1e-2;
-    while (e < tol) {
+    u32 i = 0;
+    while (e > tol) {
 
         apply_rhs(R, Z, psi, RHS);
 
@@ -180,8 +187,14 @@ vec solve(const vec& R, const vec& Z, const u16 k, const u32 m, const u32 n)
 
         e = norm(psi - psi0);
         psi0 = psi;
+        ++i;
+        if (i > 1000000) {
+            std::cerr << "No solution reached after 1,000,000 iterations" << std::endl;
+            exit(1);
+        }
     }
 
+    std::cout << "Solution reached after " << i << " iterations" << std::endl;
     return psi;
 }
 
@@ -190,7 +203,10 @@ void apply_rhs(const vec& R, const vec& Z, const vec& psi, vec& RHS)
 {
     RHS = zeros(RHS.n_elem);
     uvec pidx = get_plasma_indices(R, Z, psi);
-    RHS(pidx) = -MU0 * R(pidx) % (psi(pidx)) - (psi(pidx));
+    Real simag = min(psi(pidx));
+    Real sibry = max(psi(pidx)); // Is this the best ?
+    vec upsi = (psi(pidx) - simag) / (sibry - simag);
+    RHS(pidx) = -MU0 * R(pidx) % (upsi) - (upsi); // TODO: Figure out parameterization of dp/dpsi and dF^2 / dpsi
 }
 
 // Coils
