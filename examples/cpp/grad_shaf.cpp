@@ -39,8 +39,10 @@ vec solve(const vec& R, const vec& Z, const u16 k, const u32 m, const u32 n);
  * @param Z Z-coordinates of domain
  * @param psi Solution at last iteration
  * @param RHS Right hand side source term
+ * @param m Number of cells in xi-direction
+ * @param n Number of cells in eta-direction
  */
-void apply_rhs(const vec& R, const vec& Z, const vec& psi, vec& RHS);
+void apply_rhs(const vec& R, const vec& Z, const vec& psi, vec& RHS, const u32 m, const u32 n);
 
 /**
  * @brief Adds the poloidal coil flux to psi
@@ -121,9 +123,6 @@ int main(int argc, char* argv[])
         char buff[256];
         int _ = sprintf(buff, "rzp%um%un.csv", m, n);
         rzp.save(buff, arma::csv_ascii);
-        // R.save("r.csv", arma::csv_ascii);
-        // Z.save("z.csv", arma::csv_ascii);
-        // psi.save("psi.csv", arma::csv_ascii);
     }
 
     return 0;
@@ -155,17 +154,18 @@ vec solve(const vec& R, const vec& Z, const u16 k, const u32 m, const u32 n)
     InterpolCtoF Ix(k, m, dc.subvec(0, 2), nc.subvec(0, 2));
     sp_mat In = speye(n + 2, n + 2);
 
+    // R^2 div( grad(psi) / R^2 ) = psi_RR + psi_ZZ - (2 / R) psi_R
     sp_mat L = D * G - (2 / R) % D * Utils::spkron(In, Ix);
 
-    vec RHS(L.n_rows, fill::zeros);
+    vec RHS(L.n_rows);
 
     AddScalarBC::BC2D bc;
-    bc.dc = dc;
-    bc.nc = nc;
-    bc.v[0] = vec(n, fill::zeros);
-    bc.v[1] = vec(n, fill::zeros);
-    bc.v[2] = vec(m + 2, fill::zeros);
-    bc.v[3] = vec(m + 2, fill::zeros);
+    bc.dc = dc;                        // Tokamak Dirichlet coefficients
+    bc.nc = nc;                        // Tokamak Neumann coefficients
+    bc.v[0] = vec(n, fill::zeros);     // Left tokamak boundary
+    bc.v[1] = vec(n, fill::zeros);     // Right tokamak boundary
+    bc.v[2] = vec(m + 2, fill::zeros); // Bottom tokamak boundary
+    bc.v[3] = vec(m + 2, fill::zeros); // Top tokamak boundary
 
     vec psi = initial_guess(R, Z);
     vec psi0 = psi;
@@ -175,7 +175,7 @@ vec solve(const vec& R, const vec& Z, const u16 k, const u32 m, const u32 n)
     u32 i = 0;
     while (e > tol) {
 
-        apply_rhs(R, Z, psi, RHS);
+        apply_rhs(R, Z, psi, RHS, m, n);
 
         AddScalarBC::addScalarBC(L, RHS, k, m, dx, n, dy, bc);
 
@@ -187,8 +187,7 @@ vec solve(const vec& R, const vec& Z, const u16 k, const u32 m, const u32 n)
 
         e = norm(psi - psi0);
         psi0 = psi;
-        ++i;
-        if (i > 1000000) {
+        if (++i > 1000000) {
             std::cerr << "No solution reached after 1,000,000 iterations" << std::endl;
             exit(1);
         }
@@ -199,10 +198,10 @@ vec solve(const vec& R, const vec& Z, const u16 k, const u32 m, const u32 n)
 }
 
 // Source term
-void apply_rhs(const vec& R, const vec& Z, const vec& psi, vec& RHS)
+void apply_rhs(const vec& R, const vec& Z, const vec& psi, vec& RHS, const u32 m, const u32 n)
 {
-    RHS = zeros(RHS.n_elem);
-    uvec pidx = get_plasma_indices(R, Z, psi);
+    RHS = RHS.zeros();
+    uvec pidx = get_plasma_indices(R, Z, psi, m, n);
     Real simag = min(psi(pidx));
     Real sibry = max(psi(pidx)); // Is this the best ?
     vec upsi = (psi(pidx) - simag) / (sibry - simag);

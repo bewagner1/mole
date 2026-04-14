@@ -395,9 +395,12 @@ mat get_last_closed_flux_surface(const mat& R, const mat& Z, const mat& psi)
 }
 
 // 
-uvec get_plasma_indices(const vec& R, const vec& Z, const vec& psi)
+uvec get_plasma_indices(const vec& R, const vec& Z, const vec& psi, const u32 m, const u32 n)
 {
-    mat plasma_bdry = get_last_closed_flux_surface(R, Z, psi);
+    mat rmat = reshape(R, m + 2, n + 2).t();
+    mat zmat = reshape(Z, m + 2, n + 2).t();
+    mat pmat = reshape(psi, m + 2, n + 2).t();
+    mat plasma_bdry = get_last_closed_flux_surface(rmat, zmat, pmat);
     vec plasma_r = plasma_bdry.col(0);
     vec plasma_z = plasma_bdry.col(1);
 

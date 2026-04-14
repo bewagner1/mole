@@ -182,7 +182,7 @@ sp_mat interpolNodesToCentersCurv(u32 m, u32 n);
  * 
  * @returns A matrix of points along the last closed flux surface
  */
-mat get_last_closed_flux_surface(const vec& R, const vec& Z, const vec& psi);
+mat get_last_closed_flux_surface(const mat& R, const mat& Z, const mat& psi);
 
 /**
  * @brief Finds the points on or inside of the last closed flux surface
@@ -193,6 +193,6 @@ mat get_last_closed_flux_surface(const vec& R, const vec& Z, const vec& psi);
  * 
  * @returns A vector of the indices that correspond to points on or inside of the last closed flux surface
  */
-uvec get_plasma_indices(const vec& R, const vec& Z, const vec& psi);
+uvec get_plasma_indices(const vec& R, const vec& Z, const vec& psi, const u32 m, const u32 n);
 
 #endif //TOKAMAK_H
