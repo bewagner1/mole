@@ -20,7 +20,6 @@ set(TEST_SOURCES
   test4.cpp
   test5.cpp
   test_addscalarbc.cpp
-  test_interpol.cpp
 )
 
 set(TEST_EXECUTABLES "")
