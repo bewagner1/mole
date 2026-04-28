@@ -130,7 +130,8 @@ loglog(1 ./ num_cells, error_md, 'LineWidth', 2)
 xlim([1 / num_cells(end) 1 / num_cells(1)]);
 xlabel('dx'); ylabel('error');
 grid on;
-title(['Error: FD slope~', num2str(p_fd(1)), ', MD slope~', num2str(p_md(1))]);
+title(['Error Convergence, FD slope=', num2str(p_fd(1),'%.2f'), ...
+       ', MD slope=', num2str(p_md(1),'%.2f')]);
 legend('FD Error','MD error')
 set(gca, "linewidth", 2, "fontsize", 16)
 
@@ -143,7 +144,7 @@ xlim([num_cells(1) num_cells(end)]);
 ylim([min( min(walltime_fd), min(walltime_md) )  max( max(walltime_fd), max(walltime_md) )]);
 xlabel('num points'); ylabel('walltime [s]');
 grid on;
-title(['Walltime, MD is order ', num2str(k)]);
+title(['Walltime: FD (order 2) vs MD (order ', num2str(k), ')']);
 legend('FD time', 'MD time');
 set(gca, "linewidth", 2, "fontsize", 16)
 
@@ -155,7 +156,7 @@ loglog(num_cells, flops_md, 'LineWidth', 2);
 xlim([ num_cells(1) num_cells(end) ]); ylim([ 1e5 1e8 ]);
 xlabel('num cells'); ylabel('FLOPs');
 grid on;
-title(['FLOPs for each method, mimetic order:', num2str(k)]);
+title(['FLOPs: FD (order 2) vs MD (order ', num2str(k), ')']);
 legend('FD FLOPs', 'MD FLOPs');
 set(gca, "linewidth", 2, "fontsize", 16)
 
