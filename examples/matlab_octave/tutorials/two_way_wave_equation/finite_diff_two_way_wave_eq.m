@@ -52,8 +52,7 @@ error_fd = zeros(size(num_cells));
 walltime_fd = zeros(size(num_cells));
 flops_fd = zeros(size(num_cells));
 
-% Initial Condition Function (One smooth, one smoother)
-f = @(x) ( (x > -0.5) & (x < 0.5) ) .* (cos(pi * x).^2);
+% Initial Condition Function
 f = @(x) exp( -x.^2 / 0.1 );
 
 % Wave solution using d'Alembert
