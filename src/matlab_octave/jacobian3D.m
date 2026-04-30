@@ -96,9 +96,9 @@ function [J, Xe, Xn, Xk, Ye, Yn, Yk, Ze, Zn, Zk] = jacobian3D(k, X, Y, Z, m, dx,
     Gk = kron(kron(IFCz, In), Im) * kron(kron(Gk, In), Im);
     G = [Ge; Gn; Gk];
 
-    X = reshape(X', [], 1);
-    Y = reshape(Y', [], 1);
-    Z = reshape(Z', [], 1);
+    X = reshape(X, [], 1);
+    Y = reshape(Y, [], 1);
+    Z = reshape(Z, [], 1);
     metrics = G * [X Y Z];
 
     Xe = metrics(1:numC, 1);

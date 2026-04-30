@@ -1,5 +1,6 @@
 clc
 close all
+clear
 
 addpath('../../src/matlab_octave')
 

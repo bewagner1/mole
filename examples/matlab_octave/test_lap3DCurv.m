@@ -10,6 +10,11 @@ k = 2;  % Order of accuracy
 m = 25; % Number of nodes along x-axis
 n = 20; % Number of nodes along y-axis
 o = 15; % Number of nodes along z-axis
+dx = 1 / (m - 1);
+dy = 1 / (n - 1);
+dz = 1 / (o - 1);
+dc = [1; 1; 1; 1; 1; 1];
+nc = [0; 0; 0; 0; 0; 0];
 
 [X, Y] = genCurvGrid(n, m);
 X = repmat(X, [1 1 o]);
@@ -26,9 +31,9 @@ RHS = interp3(F, Xs, Ys, Zs);
 RHS = reshape(permute(RHS, [2, 1, 3]), [], 1);
 
 % Get 3D curvilinear mimetic divergence
-D = div3DCurv(k, X, Y, Z);
+D = div3DCurv(k, X, Y, Z, m - 1, dx, n - 1, dy, o - 1, dz, dc, nc);
 % Get 3D curvilinear mimetic gradient
-G = grad3DCurv(k, X, Y, Z);
+G = grad3DCurv(k, X, Y, Z, m - 1, dx, n - 1, dy, o - 1, dz, dc, nc);
 % Dirichlet BCs
 BC = robinBC3D(k, m-1, 1, n-1, 1, o-1, 1, 1, 0);
 % Laplacian operator with BCs
