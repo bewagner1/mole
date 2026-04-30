@@ -16,7 +16,7 @@ method = "implicit" # Method of Euler time integration
 dt = 0.0            # Step size in time
 if method == "explicit"; dt = 0.001; else; dt = 0.01; end
 
-path = joinpath(@__DIR__, "imgs") # Output path to store generated plots
+path = joinpath(@__DIR__, "output") # Output path to store generated plots
 mkpath(path)
 
 # Grid

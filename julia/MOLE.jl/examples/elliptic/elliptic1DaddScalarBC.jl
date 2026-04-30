@@ -12,7 +12,7 @@ k  = 6 # operator order of accuracy
 m  = 2k + 1 # minimum number of cells to attain desired accuracy
 dx = (east - west) / m # step length
 
-path = joinpath(@__DIR__, "imgs") # Output path to store generated plots
+path = joinpath(@__DIR__, "output") # Output path to store generated plots
 mkpath(path)
 
 # 1D staggered grid

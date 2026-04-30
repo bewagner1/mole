@@ -11,7 +11,7 @@ n = m + 2   # Number of cells in y-direction
 dx = pi / m # Step size in x-direction
 dy = pi / n # Step size in y-direction
 
-path = joinpath(@__DIR__, "imgs") # Output path to store generated plots
+path = joinpath(@__DIR__, "output") # Output path to store generated plots
 mkpath(path)
 
 # Grid
