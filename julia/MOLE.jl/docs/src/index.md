@@ -116,6 +116,14 @@ MOLE.BCs.addScalarBC!(A::SparseMatrixCSC, b::AbstractVector, bc::MOLE.BCs.Scalar
 
 The MOLE library contains examples demonstrating how to use the operators, in a broad range of partial differential equations (PDEs). More information on the mathematical content can be found in the [main MOLE documentation](https://mole-docs.readthedocs.io/en/main/examples/index.html).
 
+```@contents
+:maxdepth: 2
+:caption: Examples
+:name: examples-nav
+
+src/examples/
+```
+
 Currently, the following examples are available in the MOLE Julia package.
 
 - Elliptic Problems
