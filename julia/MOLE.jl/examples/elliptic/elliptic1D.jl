@@ -13,6 +13,9 @@ k = 6 # operator order of accuracy
 m = 2*k + 1 # minimum number of cells to attain desired accuracy
 dx = (east-west)/m # step length
 
+path = joinpath(@__DIR__, "imgs") # Output path to store generated plots
+mkpath(path)
+
 L = Operators.lap(k,m,dx)
 
 # Impose Robin boundary condition on laplacian operator
@@ -31,9 +34,7 @@ U[end] = 2*exp(1)
 U = L\U
 
 # Plot result
-p = scatter(grid, U, label="Approximated")
-plot!(p, grid, exp.(grid), label="Analytical")
-plot!(p, xlabel="x", ylabel="u(x)", title="Poisson's equation with Robin BC")
-display(p)
-println("Press Enter to close the plot and exit.")
-readline()
+p = Plots.scatter(grid, U, label="Approximated", show = false)
+plot!(p, grid, exp.(grid), label="Analytical", show = false)
+plot!(p, xlabel="x", ylabel="u(x)", title="Poisson's equation with Robin BC", show = false)
+Plots.png(p, joinpath(path, "elliptic1D_output.png"))

@@ -12,6 +12,9 @@ k  = 6 # operator order of accuracy
 m  = 2k + 1 # minimum number of cells to attain desired accuracy
 dx = (east - west) / m # step length
 
+path = joinpath(@__DIR__, "imgs") # Output path to store generated plots
+mkpath(path)
+
 # 1D staggered grid
 grid = [west; (west + dx/2):dx:(east - dx/2); east]
 
@@ -35,15 +38,14 @@ L0, rhs0 = BCs.addScalarBC!(sparse(L), rhs, bc, k, m, dx)
 u = L0 \ rhs0
 
 # Plot
-p = scatter(grid, u; label="Approximated", marker=:circle)
-plot!(p, grid, exp.(grid); label="Analytical")
+p = scatter(grid, u; label="Approximated", marker=:circle, show = false)
+plot!(p, grid, exp.(grid); label="Analytical", show = false)
 plot!(
     p, 
     title="Poisson's equation with Robin BC",
     xlabel="x",
     ylabel="u(x)",
-    legend=:topleft
+    legend=:topleft,
+    show = false
 )
-display(p)
-println("Press Enter to close the plot and exit.")
-readline()
+Plots.png(p, joinpath(path, "elliptic1DaddScalarBC_output.png"))

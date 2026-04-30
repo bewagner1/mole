@@ -11,6 +11,9 @@ n = m + 1    # Number of cells in y-direction
 dx = 1.0 / m # Step size in x-direction
 dy = 1.0 / n # Step size in y-direction
 
+path = joinpath(@__DIR__, "imgs") # Output path to store generated plots
+mkpath(path)
+
 # Grid
 xc = (dx / 2.0) : dx : (1.0 - dx / 2.0)
 yc = [0; (dy / 2.0) : dy : (1.0 - dy / 2.0); 1.0]
@@ -40,12 +43,39 @@ A0, b0 = BCs.addScalarBC!(sparse(A), b, bc, k, m, dx, n, dy)
 ua = A0 \ b0
 ua = Matrix(reshape(ua, m, n + 2))
 
-pa = heatmap(xc, yc, ua, title = "Approximate Solution", xlabel = "X", ylabel = "Y", colorbar_title = "u(x,y)", aspect_ratio = :equal)
-display(pa)
-println("Press Enter to close the plot and open the next.")
-readline()
+Plots.png(
+    Plots.heatmap(
+        xc, 
+        yc, 
+        ua, 
+        title = "Approximate Solution", 
+        xlabel = "X", 
+        ylabel = "Y", 
+        colorbar_title = "u(x,y)", 
+        aspect_ratio = :equal,
+        colormap = :jet1,
+        show = false
+    ),
+    joinpath(path, "elliptic2DXPYD_approximate.png")
+)
 
-pe = heatmap(xc, yc, ue, title = "Exact Solution", xlabel = "X", ylabel = "Y", colorbar_title = "u(x,y)", aspect_ratio = :equal)
-display(pe)
-println("Press Enter to close the plot and exit.")
-readline()
+Plots.png(
+    Plots.heatmap(
+        xc, 
+        yc, 
+        ue, 
+        title = "Exact Solution", 
+        xlabel = "X", 
+        ylabel = "Y", 
+        colorbar_title = "u(x,y)", 
+        aspect_ratio = :equal,
+        colormap = :jet1,
+        show = false
+    ),
+    joinpath(path, "elliptic2DXPYD_exact.png")
+)
+
+max_err = maximum(abs, ue - ua)
+println("Maximum error: $max_err")
+rel_err = 100 * max_err ./ (maximum(ue) - minimum(ue))
+println("Realative error: $rel_err")
