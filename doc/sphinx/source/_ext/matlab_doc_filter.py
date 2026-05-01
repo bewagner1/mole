@@ -106,14 +106,14 @@ def analyze_matlab_code(matlab_src_dir):
 
 def get_function_description(func_name, matlab_src_dir):
     """
-    Get the first line description of a MATLAB function.
+    Get the PURPOSE block description of a MATLAB function.
     
     Args:
         func_name: The name of the function
         matlab_src_dir: The directory containing MATLAB source files
         
     Returns:
-        The first line description if found, empty string otherwise
+        The PURPOSE block text if found, empty string otherwise
     """
     if func_name in _function_descriptions:
         return _function_descriptions[func_name]
@@ -143,8 +143,37 @@ def get_function_description(func_name, matlab_src_dir):
         with open(filepath, 'r') as f:
             lines = f.readlines()
             
-        # Skip the function declaration line
+        purpose_start = None
+        purpose_end = None
+
         for i, line in enumerate(lines):
+            text = re.sub(r'^\s*%\s?', '', line).strip()
+            if re.match(r'^PURPOSE\s*:?\s*$', text, re.IGNORECASE):
+                purpose_start = i
+                break
+
+        if purpose_start is not None:
+            for j in range(purpose_start + 1, len(lines)):
+                text = re.sub(r'^\s*%\s?', '', lines[j]).strip()
+                if re.match(r'^(DESCRIPTION|SYNTAX|LICENSE)\s*:?\s*$', text, re.IGNORECASE):
+                    purpose_end = j
+                    break
+
+            if purpose_end is None:
+                purpose_end = len(lines)
+
+            purpose_lines = []
+            for k in range(purpose_start + 1, purpose_end):
+                text = re.sub(r'^\s*%\s?', '', lines[k]).strip()
+                if text and not re.search(r'[-]{10,}|SPDX-License-Identifier:|© \d{4}-\d{4}|See LICENSE file', text):
+                    purpose_lines.append(text)
+
+            description = "\n".join(purpose_lines).strip()
+            _function_descriptions[func_name] = description
+            return description
+
+        # Fallback: old behavior if no PURPOSE block exists
+        for line in lines:
             if line.strip().startswith('%'):
                 # Found the first comment line
                 description = line.strip()[1:].strip()
@@ -441,16 +470,15 @@ def m2html_style_formatter(app, what, name, obj, options, lines):
                     # Clean up the description to remove dash sequences
                     if desc:
                         desc = re.sub(r'-{5,}', '', desc).strip()
+                        desc = " ".join(line.strip() for line in desc.splitlines() if line.strip())
                     
                     # Create a link using Sphinx cross-reference
                     link = f":mat:func:`{func_name}`"
                     if desc:
-                        new_line = f"{link} {desc}"
+                        new_lines.append(f"{link} {desc}")
                     else:
-                        new_line = f"{link}"
-                    # Add each function with explicit paragraph marking
-                    new_lines.append(new_line)
-                    # Add a paragraph break between entries
+                        new_lines.append(link)
+
                     if i < len(calls_functions) - 1:
                         new_lines.append("")
                 new_lines.append("")
@@ -466,16 +494,15 @@ def m2html_style_formatter(app, what, name, obj, options, lines):
                     # Clean up the description to remove dash sequences
                     if desc:
                         desc = re.sub(r'-{5,}', '', desc).strip()
+                        desc = " ".join(line.strip() for line in desc.splitlines() if line.strip())
                     
                     # Create a link using Sphinx cross-reference
                     link = f":mat:func:`{func_name}`"
                     if desc:
-                        new_line = f"{link} {desc}"
+                        new_lines.append(f"{link} {desc}")
                     else:
-                        new_line = f"{link}"
-                    # Add each function with explicit paragraph marking
-                    new_lines.append(new_line)
-                    # Add a paragraph break between entries
+                        new_lines.append(link)
+
                     if i < len(called_by) - 1:
                         new_lines.append("")
         else:
