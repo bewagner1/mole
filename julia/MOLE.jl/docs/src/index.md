@@ -111,27 +111,3 @@ MOLE.BCs.ScalarBC2D{T}
 MOLE.BCs.addScalarBC!(A::SparseMatrixCSC, b::AbstractVector, bc::MOLE.BCs.ScalarBC1D, k::Integer, m::Integer, dx)
 MOLE.BCs.addScalarBC!(A::SparseMatrixCSC, b::AbstractVector, bc::MOLE.BCs.ScalarBC2D, k::Integer, m::Integer, dx, n::Integer, dy)
 ```
-
-## Examples
-
-The MOLE library contains examples demonstrating how to use the operators, in a broad range of partial differential equations (PDEs). More information on the mathematical content can be found in the [main MOLE documentation](https://mole-docs.readthedocs.io/en/main/examples/index.html).
-
-```@contents
-:maxdepth: 2
-:caption: Examples
-:name: examples-nav
-
-src/examples/
-```
-
-Currently, the following examples are available in the MOLE Julia package.
-
-- Elliptic Problems
-  - 1D Examples
-    - ```elliptic1D```: A script that solves the 1D Poisson's equation with Robin boundary conditions using mimetic operators.
-  - 2D Examples
-    - ```elliptic2DXDirichletYDirichlet```: A script that solves the 2D Laplace equation, $\nabla^2 u = 0$, with Dirichlet boundary conditions in $x$ and $y$ using mimetic operators.
-    - ```elliptic2DXPerYDirichlet```: A script that solves the 2D Laplace equation, $\nabla^2 u = 0$, with periodic bonudary conditions in $x$ and Dirichlet boundary conditions in $y$ using mimetic operators.
-- Parabolic Problems
-  - 2D Examples
-    - ```parabolic2D```: A script that solves the 2D heat equation, $u_t = \nu \nabla^2 u$, with Dirichlet boundary conditions in $x$ and $y$ using mimetic operators.

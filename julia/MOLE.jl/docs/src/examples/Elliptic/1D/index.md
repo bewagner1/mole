@@ -2,9 +2,5 @@
 
 These examples demonstrate the solution of elliptic equations in one dimension, including boundary value problems and various solution methods.
 
-```@contents
-:maxdepth: 1
-
-Elliptic1D
-Elliptic1D-add-Scalar-BC
-```
+- [Elliptic 1D](Elliptic1D.md)
+- [Elliptic 1D addScalarBC](Elliptic1D-add-Scalar-BC.md)
