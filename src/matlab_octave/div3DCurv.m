@@ -1,14 +1,17 @@
 function D = div3DCurv(k, X, Y, Z, m, dx, n, dy, o, dz, dc, nc)
-% Returns:
-%                D : 3D curvilinear mimetic divergence operator. If optional
-%                    arguments are specified, it acts on the extended faces
-%                    (normal faces plus boundaries)
+% PURPOSE
+% Returns a 3D curvilinear mimetic divergence operator. If optional
+% arguments are specified, it acts on the extended faces
+% (normal faces plus boundaries)
 %
+% DESCRIPTION
 % Parameters:
 %                k : Order of accuracy
 %                X : x-coordinates (physical) of meshgrid centers if
 %                    optional arguments are specified, else nodes
 %                Y : y-coordinates (physical) of meshgrid centers if
+%                    optional arguments are specified, else nodes
+%                Z : z-coordintaes (physical) of meshgrid centers if
 %                    optional arguments are specified, else nodes
 %    (optional)  m : Number of cells in xi direction
 %    (optional) dx : Step size in xi direction
@@ -20,6 +23,11 @@ function D = div3DCurv(k, X, Y, Z, m, dx, n, dy, o, dz, dc, nc)
 %                    boundaries, resp.)
 %    (optional) nc : b0 (6x1 vector for left, right, bottom, top
 %                    boundaries, resp.)
+% 
+% SYNTAX
+% D = div3DCurv(k, X, Y, Z)
+% D = div3DCurv(k, X, Y, Z, m, dx, n, dy, o, dz, dc, nc)
+% 
 % ----------------------------------------------------------------------------
 % SPDX-License-Identifier: GPL-3.0-or-later
 % © 2008-2024 San Diego State University Research Foundation (SDSURF).

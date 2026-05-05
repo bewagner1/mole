@@ -1,9 +1,10 @@
 function G = grad2DCurv(k, X, Y, m, dx, n, dy, dc, nc)
-% Returns:
-%                G : 2D curvilinear mimetic gradient operator. If optional
-%                    arguments are specified, it outputs to the extended
-%                    faces (normal faces plus boundaries)
+% PURPOSE
+% Returns a 2D curvilinear mimetic gradient operator. If optional
+% arguments are specified, it outputs to the extended
+% faces (normal faces plus boundaries)
 %
+% DESCRIPTION
 % Parameters:
 %                k : Order of accuracy
 %                X : x-coordinates (physical) of meshgrid centers if
@@ -18,6 +19,11 @@ function G = grad2DCurv(k, X, Y, m, dx, n, dy, dc, nc)
 %                    boundaries, resp.)
 %    (optional) nc : b0 (4x1 vector for left, right, bottom, top
 %                    boundaries, resp.)
+% 
+% SYNTAX
+% G = grad2DCurv(k, X, Y)
+% G = grad2DCurv(k, X, Y, m, dx, n, dy, dc, nc)
+% 
 % ----------------------------------------------------------------------------
 % SPDX-License-Identifier: GPL-3.0-or-later
 % © 2008-2024 San Diego State University Research Foundation (SDSURF).

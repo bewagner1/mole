@@ -4,6 +4,19 @@ function D = div3DCurvLegacy(k, X, Y, Z)
 %                 !!! WARNING: DEPRICATED BY div2DCurv.m !!!
 % ----------------------------------------------------------------------------
 % 
+% PURPOSE
+% Returns a 3D curvilinear mimetic divergence operator.
+% 
+% DESCRIPTION
+% % Parameters:
+%                k : Order of accuracy
+%                X : x-coordinates (physical) of meshgrid nodes
+%                Y : y-coordinates (physical) of meshgrid nodes
+%                Z : z-coordintaes (physical) of meshgrid nodes
+% 
+% SYNTAX
+% D = div3DCurvLegacy(k, X, Y, Z)
+% 
 % ----------------------------------------------------------------------------
 % SPDX-License-Identifier: GPL-3.0-or-later
 % © 2008-2024 San Diego State University Research Foundation (SDSURF).

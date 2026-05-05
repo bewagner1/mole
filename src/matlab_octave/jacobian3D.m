@@ -1,26 +1,8 @@
 function [J, Xe, Xn, Xk, Ye, Yn, Yk, Ze, Zn, Zk] = jacobian3D(k, X, Y, Z, m, dx, n, dy, o, dz, dc, nc)
-% Returns:
-%                J : Determinant of the Jacobian on the centers if optional
-%                    arguments are specified, else nodes
-%               Xe : dx/de metric on the centers if optional arguments are 
-%                    specified, else nodes
-%               Xn : dx/dn metric on the centers if optional arguments are 
-%                    specified, else nodes
-%               Xk : dx/dk metric on the centers if optional arguments are 
-%                    specified, else nodes
-%               Ye : dy/de metric on the centers if optional arguments are 
-%                    specified, else nodes
-%               Yn : dy/dn metric on the centers if optional arguments are 
-%                    specified, else nodes
-%               Yk : dy/dk metric on the centers if optional arguments are 
-%                    specified, else nodes
-%               Ze : dz/de metric on the centers if optional arguments are 
-%                    specified, else nodes
-%               Zn : dz/dn metric on the centers if optional arguments are 
-%                    specified, else nodes
-%               Zk : dz/dk metric on the centers if optional arguments are 
-%                    specified, else nodes
+% PURPOSE
+% Returns the 3D jacobian metrics of a mesh
 %
+% DESCRIPTION
 % Parameters:
 %                k : Order of accuracy
 %                X : x-coordinates (physical) of meshgrid centers if optional
@@ -39,6 +21,11 @@ function [J, Xe, Xn, Xk, Ye, Yn, Yk, Ze, Zn, Zk] = jacobian3D(k, X, Y, Z, m, dx,
 %                    boundaries, resp.)
 %    (optional) nc : b0 (6x1 vector for left, right, bottom, top
 %                    boundaries, resp.)
+% 
+% SYNTAX
+% [J, Xe, Xn, Xk, Ye, Yn, Yk, Ze, Zn, Zk] = jacobian3D(k, X, Y, Z)
+% [J, Xe, Xn, Xk, Ye, Yn, Yk, Ze, Zn, Zk] = jacobian3D(k, X, Y, Z, m, dx, n, dy, o, dz, dc, nc)
+% 
 % ----------------------------------------------------------------------------
 % SPDX-License-Identifier: GPL-3.0-or-later
 % © 2008-2024 San Diego State University Research Foundation (SDSURF).
