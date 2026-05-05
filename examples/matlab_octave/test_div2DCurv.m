@@ -104,3 +104,6 @@ xlabel('x')
 ylabel('y')
 axis equal
 shading interp
+
+l2_norm = norm(C(:) - Ccomp(:));
+disp("L2 norm: " + l2_norm)

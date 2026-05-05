@@ -110,3 +110,6 @@ axis equal
 colorbar
 view([0 90])
 shading interp
+
+l2_norm = norm(div(:) - Ccomp(:));
+disp("L2 norm: " + l2_norm)

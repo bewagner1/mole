@@ -1,3 +1,10 @@
+% Tests the 2D Curvilinear Gradient
+% on a curvilinear mesh
+% 
+% u = x^2 + y^2
+% Gu = <2x, 2y>
+% 
+
 clc
 close all
 
@@ -26,6 +33,8 @@ set(gcf, 'Color', 'w')
 Cs = Xs.^2 + Ys.^2;
 % Reshape the field so it can be multiplied by the operator later on
 C_ = reshape(Cs', [], 1);
+Xs = reshape(Xs', [], 1);
+Ys = reshape(Ys', [], 1);
 
 % Get 2D curvilinear mimetic gradient
 G = grad2DCurv(k, Xs, Ys, m - 1, dx, n - 1, dy, dc, nc);
@@ -44,10 +53,10 @@ CtoU = kron(speye(n + 1), CtoU);
 CtoV = interpolCentersToFacesD1D(k, n - 1);
 CtoV = kron(CtoV, speye(m + 1));
 
-Ux = CtoU * reshape(Xs', [], 1);
-Uy = CtoU * reshape(Ys', [], 1);
-Vx = CtoV * reshape(Xs', [], 1);
-Vy = CtoV * reshape(Ys', [], 1);
+Ux = CtoU * Xs;
+Uy = CtoU * Ys;
+Vx = CtoV * Xs;
+Vy = CtoV * Ys;
 
 Ux = reshape(Ux, m + 1, n)';
 Uy = reshape(Uy, m + 1, n)';
@@ -58,11 +67,11 @@ Vy = reshape(Vy, m, n + 1)';
 figure
 set(gcf, 'Color', 'w')
 subplot(3, 1, 1)
-surf(Xs, Ys, Cs, 'EdgeColor', 'none');
+surf(reshape(Xs, m + 1, n + 1)', reshape(Ys, m + 1, n + 1)', Cs, 'EdgeColor', 'none');
 colorbar
 xlabel('x')
 ylabel('y')
-title('C')
+title('C Approximate')
 axis equal
 view([0 90])
 shading interp
@@ -71,7 +80,7 @@ surf(Ux, Uy, Gx, 'EdgeColor', 'none');
 colorbar
 xlabel('x')
 ylabel('y')
-title('U')
+title('U Approximate')
 axis equal
 view([0 90])
 shading interp
@@ -80,7 +89,43 @@ surf(Vx, Vy, Gy, 'EdgeColor', 'none');
 colorbar
 xlabel('x')
 ylabel('y')
-title('V')
+title('V Approximate')
 axis equal
 view([0 90])
 shading interp
+
+figure
+set(gcf, 'Color', 'w')
+subplot(3, 1, 1)
+surf(reshape(Xs, m + 1, n + 1)', reshape(Ys, m + 1, n + 1)', Cs, 'EdgeColor', 'none');
+colorbar
+xlabel('x')
+ylabel('y')
+title('C Analytical')
+axis equal
+view([0 90])
+shading interp
+subplot(3, 1, 2)
+surf(Ux, Uy, 2 * Ux, 'EdgeColor', 'none');
+colorbar
+xlabel('x')
+ylabel('y')
+title('U Analytical')
+axis equal
+view([0 90])
+shading interp
+subplot(3, 1, 3)
+surf(Vx, Vy, 2 * Vy, 'EdgeColor', 'none');
+colorbar
+xlabel('x')
+ylabel('y')
+title('V Analytical')
+axis equal
+view([0 90])
+shading interp
+
+l2_norm_u = norm(Gx - 2 * Ux);
+l2_norm_v = norm(Gy - 2 * Vy);
+
+disp("L2 norm of U: " + l2_norm_u)
+disp("L2 norm of V: " + l2_norm_v)
