@@ -13,8 +13,13 @@ dx = 2.0 / m        # Step size in x-direction
 dy = 2.0 / n        # Step size in y-direction
 t = 3.0             # Final time
 method = "implicit" # Method of Euler time integration
-dt = 0.0            # Step size in time
-if method == "explicit"; dt = 0.001; else; dt = 0.01; end
+
+if method == "explicit"
+    dt = 0.001 # Step size in time
+else
+    dt = 0.01  # Step size in time
+end
+
 
 path = joinpath(@__DIR__, "output") # Output path to store generated plots
 mkpath(path)
@@ -32,7 +37,7 @@ for i = 1:m
         end
     end
 end
-u = Matrix(reshape(u, :, 1))
+u = vec(reshape(u, :, 1))
 
 # Boundary Conditions
 dc = (1.0, 1.0, 1.0, 1.0)
@@ -47,18 +52,27 @@ if method == "explicit"
 else
     L = sparse(Matrix(I, size(L))) .- nu * dt .* sparse(L)
 end
+L, u = BCs.addScalarBC!(L, u, bc, k, m, dx, n, dy)
 
-num_it = ceil(Int, t / dt)
-sol = zeros((m + 2) * (n + 2), 1 + num_it)
-for it = 0:num_it
-    sol[:, it + 1] = u
+function time_step(L, u, t, dt, method)
 
-    if method == "explicit"
-        global u = L * u
-    else
-        global u = L \ u
+    num_it = ceil(Int, t / dt)
+    sol = zeros(length(u), 1 + num_it)
+
+    for it = 0:num_it
+        sol[:, it + 1] = u
+
+        if method == "explicit"
+            u = L * u
+        else
+            u = L \ u
+        end
     end
+
+    sol
 end
+
+sol = time_step(L, u, t, dt, method)
 
 anim = Plots.@animate for i in 1:length(sol[1, :])
     it = i - 1
